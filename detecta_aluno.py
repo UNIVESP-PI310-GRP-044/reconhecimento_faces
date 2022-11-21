@@ -57,6 +57,7 @@ def analysis(db_path, model_name = 'VGG-Face', detector_backend = 'opencv', dist
 
         #tuned thresholds for model and metric pair
         threshold = dst.findThreshold(model_name, distance_metric)
+        print(threshold)
 
     #------------------------
 
@@ -131,7 +132,7 @@ def analysis(db_path, model_name = 'VGG-Face', detector_backend = 'opencv', dist
 
         detected_faces = []
         face_index = 0
-        for face, (x, y, w, h) in faces:
+        for face, (x, y, w, h), _confidence in faces:
             if w > 130: #discard small detected faces
 
                 face_detected = True
@@ -207,7 +208,7 @@ def analysis(db_path, model_name = 'VGG-Face', detector_backend = 'opencv', dist
 
                                 df['distance'] = df.apply(findDistance, axis = 1)
                                 df = df.sort_values(by = ["distance"])
-
+                                print(df)
                                 candidate = df.iloc[0]
                                 employee_name = candidate['employee']
                                 best_distance = candidate['distance']
@@ -221,7 +222,7 @@ def analysis(db_path, model_name = 'VGG-Face', detector_backend = 'opencv', dist
 
                                     display_img = cv2.resize(display_img, (pivot_img_size, pivot_img_size))
 
-                                    label = employee_name.split("/")[-1].replace(".jpg", "")
+                                    label = employee_name.split("/")[-1].replace(".jpg", "").split('-')[1]
                                     if label not in alunos_avaliados:
                                         requests.post('http://127.0.0.1:5000/api/v1/ocorrencias/', json={"id_aluno": label})
                                         alunos_avaliados.append(label)
